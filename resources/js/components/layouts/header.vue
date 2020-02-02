@@ -1,10 +1,11 @@
-<div class="main-header" data-background-color="purple">
+<template>
+    <div class="main-header" data-background-color="purple">
 			<!-- Logo Header -->
 			<div class="logo-header">
 				
 				<a href="index.html" class="logo" style="color:white">
 					<!-- <img src="assets/img/logoazzara.svg" alt="navbar brand" class="navbar-brand"> -->
-          Capil Desa
+                Capil Desa
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon">
@@ -173,7 +174,7 @@
 						<li class="nav-item dropdown hidden-caret">
 							<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false">
 								<div class="avatar-sm">
-									<img src="{{url('')}}/user.png" alt="..." class="avatar-img rounded-circle">
+									<img src="user.png" alt="..." class="avatar-img rounded-circle">
 								</div>
 							</a>
 							<ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -204,3 +205,9 @@
 			</nav>
 			<!-- End Navbar -->
 		</div>
+</template>
+<script>
+    export default {
+        
+    }
+</script>

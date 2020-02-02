@@ -16,3 +16,10 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Religion
+Route::get('religion/all','Api\ReligionController@index');
+Route::post('religion/save','Api\ReligionController@create');
+Route::get('religion/delete/{id}','Api\ReligionController@delete');
+Route::post('religion/getById','Api\ReligionController@getById');
+// End Religion

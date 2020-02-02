@@ -11,6 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('pages/home/dashboard');
-});
+Route::get('/{any}', function () {
+    return view('app');
+})->where('any', '.*');
+// Route::get('/{any}', 'SinglePageController@index')->where('any', '.*');
+// Route::get('/religion', function () {
+//     return view('pages/religion/index');
+// });

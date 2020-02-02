@@ -33,4 +33,5 @@
   <!-- Sweet Alert -->
   <script src="{{asset('app-assets/js/plugin/sweetalert.min.js')}}"></script>
   <!-- Azzara JS -->
+  <script src=/js/app.js></script>
   <script src="{{asset('app-assets/js/ready.js')}}"></script>
