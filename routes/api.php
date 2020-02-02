@@ -22,4 +22,5 @@ Route::get('religion/all','Api\ReligionController@index');
 Route::post('religion/save','Api\ReligionController@create');
 Route::get('religion/delete/{id}','Api\ReligionController@delete');
 Route::post('religion/getById','Api\ReligionController@getById');
+Route::post('religion/update/{id}','Api\ReligionController@update');
 // End Religion

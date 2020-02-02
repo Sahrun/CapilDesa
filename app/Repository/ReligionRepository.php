@@ -4,15 +4,27 @@ namespace App\Repository;
 
 
 use App\Religion;
+use App\Helper\Principal;
+use App\Helper\FilterBuilder;
 
 class ReligionRepository 
 {
 
-    public function all()
+    public $principal;
+
+    function __construct(Principal $_principal) {
+        $this->principal = $_principal;
+    }
+
+    public function all($request)
     {
-        $result = array();
-        $query = Religion::where('is_active',1)->get();
-        foreach($query as $key => $value)
+        $data = array();
+        $query = Religion::where('is_active',1);
+
+        $filter_builder = new FilterBuilder;
+        $result = $filter_builder->filterBuilder($query,$request);
+
+        foreach($result['data'] as $key => $value)
         {
             $item = array(
                 'id' => $value->id,
@@ -23,8 +35,9 @@ class ReligionRepository
                 'midified' => '',
                 'modified_at' => $value->updated_at? date("j F Y , g:i a",strtotime($value->updated_at)) : "" 
             );
-            array_push($result,$item);
+            array_push($data,$item);
         }
+        $result['data'] = $data;
         return $result;
     }
 
@@ -32,10 +45,10 @@ class ReligionRepository
     {
        return Religion::create([
                         "name" => $data->name, 
-                        "is_active" => $data->is_active,
+                        "is_active" => 1,
                         "description" => $data->description,
-                        "created_by" => 0, 
-                        "modified_by" => 0, 
+                        "created_by" => $this->principal->principalUser(), 
+                        "modified_by" => $this->principal->principalUser(), 
                         "created_at" => Date("Y-m-d h:i:s")
         ]);
     }
@@ -50,5 +63,16 @@ class ReligionRepository
     public function getById($id)
     {
         return Religion::find($id);
+    }
+
+    public function update($id,$data)
+    {
+        $religion = Religion::find($id);
+        $religion->name = $data->name;
+        $religion->description = $data->description;
+        $religion->modified_by = $this->principal->principalUser();
+        $religion->updated_at = Date("Y-m-d h:i:s") ;
+        return $religion->save();
+
     }
 }

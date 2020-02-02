@@ -37,20 +37,20 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <div class="dataTables_wrapper container-fluid dt-bootstrap4">
-                                    <filter-top />
+                                    <filter-top :filter="propsFilter"/>
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <table id="multi-filter-select" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="multi-filter-select_info">
                                                 <thead>
                                                     <tr role="row">
                                                         <th>No</th>
-                                                        <th class="sorting_asc" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Agama</th>
+                                                        <th class="sorting_asc text-center" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Agama</th>
                                                         <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Status</th>
                                                         <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" >Dibuat oleh</th>
                                                         <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" >Tanggal</th>
                                                         <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" >Dirubah oleh</th>
                                                         <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" >Tanggal</th>
-                                                        <th>Aksi</th>
+                                                        <th class="text-center">Aksi</th>
                                                     </tr>
                                                     <tr>
                                                         <!-- <th rowspan="1" colspan="1">
@@ -103,8 +103,8 @@
                                                         <td>
                                                              <div class="form-button-action">
                                                                
-                                                                    <a title="Edit" class="btn btn-link btn-waring"
-                                                                        @click="getById(item.id)">
+                                                                    <a title="Edit" class="btn btn-link btn-success"
+                                                                        @click="edit(item.id)">
                                                                         <i class="fa fa-edit"></i>
                                                                     </a>
                                                                     <a title="Hapus" class="btn btn-link btn-danger"
@@ -118,7 +118,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                   <pagination />
+                                   <pagination :filter="propsFilter"/>
                                 </div>
                             </div>
                         </div>
@@ -126,31 +126,48 @@
                 </div>
             </div>
         </div>
-        <form-modal :religion="religion"/>
+        <form-modal :religion="religion" :error="error"/>
     </div>
 </template>
 <script>
     import formModal from './../modals/religion/form.vue'
-    import httpService from './../../halper/httpService.js'
-    import config from './../../halper/config.js'
+    import httpService from './../../halper/httpService'
+    import config from './../../halper/config'
     import pagination from './../../components/pagination'
     import filterTop from './../../components/filterTop'
-    import alert from './../../halper/alert.js'
+    import s_alert from './../../halper/sweetalert'
+    import prototype from '../../halper/prototype'
+
+
+    function religionModel() {
+                this.id = null,
+                this.name = null,
+                this.is_active = null,
+                this.description =null,
+                this.created_by = null,
+                this.modified_by = null,
+                this.created_at = null,
+                this.updated_at = null
+    };
+
+    function error()
+    {
+        this.name = null,
+        this.description =null
+    };
 
     export default {
         data() {
         return {
-                religion : {
-                    id :null,
-                    name :null,
-                    is_active:null,
-                    description:null,
-                    created_by :null,
-                    modified_by :null,
-                    created_at :null,
-                    updated_at:null
-                },
-                religions:[]
+                religion : {},
+                religions:[],
+                error:{},
+                propsFilter:{
+                    show:config.Grid.defaultShow,
+                    search:null,
+                    page:null,
+                    pages:null
+                }
             }
         },
         created() {
@@ -159,43 +176,58 @@
         methods: {
             loadData(){
                $("#loading").show();
-                httpService.Get(config.routeApi.religion.all).then((data)=>
+                var param ="?show="+this.propsFilter.show;
+                httpService.Get(config.routeApi.religion.all,param).then((response)=>
                 {
-                   this.religions = data;
+                   this.religions = response.data;
+                   this.propsFilter.pages = response.pages;
                    $("#loading").hide();
                 })
             },
             openForm() {
-
-                this.religion.is_active = 1;
+                this.religion = new religionModel;
+                this.error = new error;
                 $("#formModal").modal('show');
+            },
+            submit()
+            {
+                prototype.IsNull(this.religion.id) ? this.save(): this.update();
             },
             save(){
                 httpService.Post(config.routeApi.religion.save,this.religion).then((data)=>
                 {
                   $("#formModal").modal('hide');
-                  alert.Success("data agama berhasil disimpan");
+                  s_alert.Success("data agama berhasil disimpan");
                   this.loadData();
                 })
             },
+            update(){
+                httpService.Post(config.routeApi.religion.update+this.religion.id,this.religion).then((response)=>
+                    {
+                        s_alert.Success("Data agama berhasil di update");
+                        $("#formModal").modal('hide');
+                        this.loadData();
+                });
+            },
             deleteData(id)
             {
-                alert.Confirm("Anda akan menghapus data agama").then((response) =>{
+                s_alert.Confirm("Anda akan menghapus data agama").then((response) =>{
                     if(response){
                         httpService.Get(config.routeApi.religion.delete,id).then((data)=>
                         {
-                            alert.Success("Data agama berhasil dihapus");
+                            s_alert.Success("Data agama berhasil dihapus");
                             this.loadData();
                         });
                     }
                 });
             },
-           getById(id){
+           edit(id){
               var formData = new FormData();
               formData.append('id',id);
                httpService.Post(config.routeApi.religion.getById,formData).then((data)=>
                 {
                     this.religion = data.data;
+                    this.error = new error;
                     $("#formModal").modal('show');
                 });
            }

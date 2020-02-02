@@ -18,6 +18,7 @@
                             <div class="form-group">
                                 <label>Nama Agama</label>
                                 <input type="text" v-model="religion.name" class="form-control" placeholder="nama agama">
+                                <span class="text-warning">{{error.name}}</span>
                             </div>
                             <div class="form-group">
                                 <label>Description</label>
@@ -27,7 +28,7 @@
                     </div>
                 </div>
                 <div class="modal-footer no-bd">
-                    <button type="button" class="btn btn-primary btn-sm" @click="save">SIMPAN</button>
+                    <button type="button" class="btn btn-primary btn-sm" @click="submit">SIMPAN</button>
                     <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">BATAL</button>
                 </div>
             </div>
@@ -35,11 +36,19 @@
     </div>
 </template>
 <script>
+    import prototype from '../../../halper/prototype'
+
     export default {
-        props: ['religion'],
+        props: ['religion','error'],
         methods: {
-            save() {
-                this.$parent.save();
+            submit() {
+                if(prototype.IsNull(this.religion.name))
+                {
+                    this.error.name = "Field harus diisi"
+                }else
+                {
+                    this.$parent.submit();
+                }
             }
         },
     }

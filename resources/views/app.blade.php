@@ -17,6 +17,7 @@
   Loading ...
    </div>
    
+   
   <!-- <script src=/js/app.js></script> -->
   @include('includes.footer')
 </body>

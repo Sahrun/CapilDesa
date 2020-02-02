@@ -1924,6 +1924,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 // import { mapState, mapGetters } from 'vuex'
 
  // import Footer from './components/Footer.vue'
@@ -1950,6 +1951,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _halper_config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../halper/config */ "./resources/js/halper/config.js");
 //
 //
 //
@@ -1972,7 +1974,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['filter'],
+  data: function data() {
+    return {
+      showList: _halper_config__WEBPACK_IMPORTED_MODULE_0__["default"].Grid.show
+    };
+  }
+});
 
 /***/ }),
 
@@ -2531,7 +2544,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({});
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['filter']
+});
 
 /***/ }),
 
@@ -3102,6 +3122,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _halper_prototype__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../halper/prototype */ "./resources/js/halper/prototype.js");
 //
 //
 //
@@ -3138,11 +3159,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['religion'],
+  props: ['religion', 'error'],
   methods: {
-    save: function save() {
-      this.$parent.save();
+    submit: function submit() {
+      if (_halper_prototype__WEBPACK_IMPORTED_MODULE_0__["default"].IsNull(this.religion.name)) {
+        this.error.name = "Field harus diisi";
+      } else {
+        this.$parent.submit();
+      }
     }
   }
 });
@@ -3159,11 +3186,12 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modals_religion_form_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../modals/religion/form.vue */ "./resources/js/pages/modals/religion/form.vue");
-/* harmony import */ var _halper_httpService_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../halper/httpService.js */ "./resources/js/halper/httpService.js");
-/* harmony import */ var _halper_config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../halper/config.js */ "./resources/js/halper/config.js");
+/* harmony import */ var _halper_httpService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../halper/httpService */ "./resources/js/halper/httpService.js");
+/* harmony import */ var _halper_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../halper/config */ "./resources/js/halper/config.js");
 /* harmony import */ var _components_pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../components/pagination */ "./resources/js/components/pagination.vue");
 /* harmony import */ var _components_filterTop__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../components/filterTop */ "./resources/js/components/filterTop.vue");
-/* harmony import */ var _halper_alert_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../halper/alert.js */ "./resources/js/halper/alert.js");
+/* harmony import */ var _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../halper/sweetalert */ "./resources/js/halper/sweetalert.js");
+/* harmony import */ var _halper_prototype__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../halper/prototype */ "./resources/js/halper/prototype.js");
 //
 //
 //
@@ -3301,20 +3329,31 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+function religionModel() {
+  this.id = null, this.name = null, this.is_active = null, this.description = null, this.created_by = null, this.modified_by = null, this.created_at = null, this.updated_at = null;
+}
+
+;
+
+function error() {
+  this.name = null, this.description = null;
+}
+
+;
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      religion: {
-        id: null,
-        name: null,
-        is_active: null,
-        description: null,
-        created_by: null,
-        modified_by: null,
-        created_at: null,
-        updated_at: null
-      },
-      religions: []
+      religion: {},
+      religions: [],
+      error: {},
+      propsFilter: {
+        show: _halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].Grid.defaultShow,
+        search: null,
+        page: null,
+        pages: null
+      }
     };
   },
   created: function created() {
@@ -3325,45 +3364,62 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       $("#loading").show();
-      _halper_httpService_js__WEBPACK_IMPORTED_MODULE_1__["default"].Get(_halper_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.all).then(function (data) {
-        _this.religions = data;
+      var param = "?show=" + this.propsFilter.show;
+      _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Get(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.all, param).then(function (response) {
+        _this.religions = response.data;
+        _this.propsFilter.pages = response.pages;
         $("#loading").hide();
       });
     },
     openForm: function openForm() {
-      this.religion.is_active = 1;
+      this.religion = new religionModel();
+      this.error = new error();
       $("#formModal").modal('show');
+    },
+    submit: function submit() {
+      _halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.religion.id) ? this.save() : this.update();
     },
     save: function save() {
       var _this2 = this;
 
-      _halper_httpService_js__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.save, this.religion).then(function (data) {
+      _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.save, this.religion).then(function (data) {
         $("#formModal").modal('hide');
-        _halper_alert_js__WEBPACK_IMPORTED_MODULE_5__["default"].Success("data agama berhasil disimpan");
+        _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__["default"].Success("data agama berhasil disimpan");
 
         _this2.loadData();
       });
     },
-    deleteData: function deleteData(id) {
+    update: function update() {
       var _this3 = this;
 
-      _halper_alert_js__WEBPACK_IMPORTED_MODULE_5__["default"].Confirm("Anda akan menghapus data agama").then(function (response) {
-        if (response) {
-          _halper_httpService_js__WEBPACK_IMPORTED_MODULE_1__["default"].Get(_halper_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion["delete"], id).then(function (data) {
-            _halper_alert_js__WEBPACK_IMPORTED_MODULE_5__["default"].Success("Data agama berhasil dihapus");
+      _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.update + this.religion.id, this.religion).then(function (response) {
+        _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__["default"].Success("Data agama berhasil di update");
+        $("#formModal").modal('hide');
 
-            _this3.loadData();
+        _this3.loadData();
+      });
+    },
+    deleteData: function deleteData(id) {
+      var _this4 = this;
+
+      _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__["default"].Confirm("Anda akan menghapus data agama").then(function (response) {
+        if (response) {
+          _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Get(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion["delete"], id).then(function (data) {
+            _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__["default"].Success("Data agama berhasil dihapus");
+
+            _this4.loadData();
           });
         }
       });
     },
-    getById: function getById(id) {
-      var _this4 = this;
+    edit: function edit(id) {
+      var _this5 = this;
 
       var formData = new FormData();
       formData.append('id', id);
-      _halper_httpService_js__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.getById, formData).then(function (data) {
-        _this4.religion = data.data;
+      _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.getById, formData).then(function (data) {
+        _this5.religion = data.data;
+        _this5.error = new error();
         $("#formModal").modal('show');
       });
     }
@@ -21011,74 +21067,106 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-        _c(
-          "div",
-          {
-            staticClass: "dataTables_length",
-            attrs: { id: "multi-filter-select_length" }
-          },
-          [
-            _c("label", [
-              _vm._v("Show\n                "),
-              _c(
-                "select",
-                {
-                  staticClass: "form-control form-control-sm",
-                  attrs: {
-                    name: "multi-filter-select_length",
-                    "aria-controls": "multi-filter-select"
+  return _c("div", { staticClass: "row" }, [
+    _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+      _c(
+        "div",
+        {
+          staticClass: "dataTables_length",
+          attrs: { id: "multi-filter-select_length" }
+        },
+        [
+          _c("label", [
+            _vm._v("Show\n                "),
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.filter.show,
+                    expression: "filter.show"
                   }
-                },
-                [
-                  _c("option", { attrs: { value: "10" } }, [_vm._v("10")]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "25" } }, [_vm._v("25")]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "50" } }, [_vm._v("50")]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "100" } }, [_vm._v("100")])
-                ]
-              ),
-              _vm._v(" entries")
-            ])
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-        _c(
-          "div",
-          {
-            staticClass: "dataTables_filter",
-            attrs: { id: "multi-filter-select_filter" }
-          },
-          [
-            _c("label", [
-              _vm._v("Search:\n                "),
-              _c("input", {
+                ],
                 staticClass: "form-control form-control-sm",
                 attrs: {
-                  type: "search",
-                  placeholder: "",
+                  name: "multi-filter-select_length",
                   "aria-controls": "multi-filter-select"
+                },
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.$set(
+                      _vm.filter,
+                      "show",
+                      $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+                    )
+                  }
                 }
-              })
-            ])
-          ]
-        )
-      ])
+              },
+              _vm._l(_vm.showList, function(row, index) {
+                return _c("option", { key: index, domProps: { value: row } }, [
+                  _vm._v(_vm._s(row))
+                ])
+              }),
+              0
+            ),
+            _vm._v(" entries")
+          ])
+        ]
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+      _c(
+        "div",
+        {
+          staticClass: "dataTables_filter",
+          attrs: { id: "multi-filter-select_filter" }
+        },
+        [
+          _c("label", [
+            _vm._v("Search:\n                "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filter.search,
+                  expression: "filter.search"
+                }
+              ],
+              staticClass: "form-control form-control-sm",
+              attrs: {
+                type: "search",
+                placeholder: "",
+                "aria-controls": "multi-filter-select"
+              },
+              domProps: { value: _vm.filter.search },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(_vm.filter, "search", $event.target.value)
+                }
+              }
+            })
+          ])
+        ]
+      )
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -22197,207 +22285,133 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "row" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-sm-12 col-md-7" }, [
+      _c(
+        "div",
+        {
+          staticClass: "dataTables_paginate paging_simple_numbers",
+          attrs: { id: "multi-filter-select_paginate" }
+        },
+        [
+          _c(
+            "ul",
+            { staticClass: "pagination" },
+            [
+              _vm._m(1),
+              _vm._v(" "),
+              _vm._l(_vm.filter.pages, function(x) {
+                return _c(
+                  "li",
+                  { key: x, staticClass: "paginate_button page-item active" },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "page-link",
+                        attrs: {
+                          href: "#",
+                          "aria-controls": "multi-filter-select",
+                          "data-dt-idx": "1",
+                          tabindex: "0"
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(x) +
+                            "\n                    "
+                        )
+                      ]
+                    )
+                  ]
+                )
+              }),
+              _vm._v(" "),
+              _vm._m(2)
+            ],
+            2
+          )
+        ]
+      )
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-sm-12 col-md-5" }, [
+    return _c("div", { staticClass: "col-sm-12 col-md-5" }, [
+      _c(
+        "div",
+        {
+          staticClass: "dataTables_info",
+          attrs: {
+            id: "multi-filter-select_info",
+            role: "status",
+            "aria-live": "polite"
+          }
+        },
+        [_vm._v("Showing 1 to 5 of 57 entries")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "li",
+      {
+        staticClass: "paginate_button page-item previous disabled",
+        attrs: { id: "multi-filter-select_previous" }
+      },
+      [
         _c(
-          "div",
+          "a",
           {
-            staticClass: "dataTables_info",
+            staticClass: "page-link",
             attrs: {
-              id: "multi-filter-select_info",
-              role: "status",
-              "aria-live": "polite"
+              href: "#",
+              "aria-controls": "multi-filter-select",
+              "data-dt-idx": "0",
+              tabindex: "0"
             }
           },
-          [_vm._v("Showing 1 to 5 of 57 entries")]
+          [_vm._v("Previous")]
         )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-12 col-md-7" }, [
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "li",
+      {
+        staticClass: "paginate_button page-item next",
+        attrs: { id: "multi-filter-select_next" }
+      },
+      [
         _c(
-          "div",
+          "a",
           {
-            staticClass: "dataTables_paginate paging_simple_numbers",
-            attrs: { id: "multi-filter-select_paginate" }
+            staticClass: "page-link",
+            attrs: {
+              href: "#",
+              "aria-controls": "multi-filter-select",
+              "data-dt-idx": "8",
+              tabindex: "0"
+            }
           },
-          [
-            _c("ul", { staticClass: "pagination" }, [
-              _c(
-                "li",
-                {
-                  staticClass: "paginate_button page-item previous disabled",
-                  attrs: { id: "multi-filter-select_previous" }
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: {
-                        href: "#",
-                        "aria-controls": "multi-filter-select",
-                        "data-dt-idx": "0",
-                        tabindex: "0"
-                      }
-                    },
-                    [_vm._v("Previous")]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c("li", { staticClass: "paginate_button page-item active" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: {
-                      href: "#",
-                      "aria-controls": "multi-filter-select",
-                      "data-dt-idx": "1",
-                      tabindex: "0"
-                    }
-                  },
-                  [_vm._v("1")]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "paginate_button page-item " }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: {
-                      href: "#",
-                      "aria-controls": "multi-filter-select",
-                      "data-dt-idx": "2",
-                      tabindex: "0"
-                    }
-                  },
-                  [_vm._v("2")]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "paginate_button page-item " }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: {
-                      href: "#",
-                      "aria-controls": "multi-filter-select",
-                      "data-dt-idx": "3",
-                      tabindex: "0"
-                    }
-                  },
-                  [_vm._v("3")]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "paginate_button page-item " }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: {
-                      href: "#",
-                      "aria-controls": "multi-filter-select",
-                      "data-dt-idx": "4",
-                      tabindex: "0"
-                    }
-                  },
-                  [_vm._v("4")]
-                )
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "paginate_button page-item " }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: {
-                      href: "#",
-                      "aria-controls": "multi-filter-select",
-                      "data-dt-idx": "5",
-                      tabindex: "0"
-                    }
-                  },
-                  [_vm._v("5")]
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "li",
-                {
-                  staticClass: "paginate_button page-item disabled",
-                  attrs: { id: "multi-filter-select_ellipsis" }
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: {
-                        href: "#",
-                        "aria-controls": "multi-filter-select",
-                        "data-dt-idx": "6",
-                        tabindex: "0"
-                      }
-                    },
-                    [_vm._v("…")]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c("li", { staticClass: "paginate_button page-item " }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "page-link",
-                    attrs: {
-                      href: "#",
-                      "aria-controls": "multi-filter-select",
-                      "data-dt-idx": "7",
-                      tabindex: "0"
-                    }
-                  },
-                  [_vm._v("12")]
-                )
-              ]),
-              _vm._v(" "),
-              _c(
-                "li",
-                {
-                  staticClass: "paginate_button page-item next",
-                  attrs: { id: "multi-filter-select_next" }
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: {
-                        href: "#",
-                        "aria-controls": "multi-filter-select",
-                        "data-dt-idx": "8",
-                        tabindex: "0"
-                      }
-                    },
-                    [_vm._v("Next")]
-                  )
-                ]
-              )
-            ])
-          ]
+          [_vm._v("Next")]
         )
-      ])
-    ])
+      ]
+    )
   }
 ]
 render._withStripped = true
@@ -23695,7 +23709,11 @@ var render = function() {
                         _vm.$set(_vm.religion, "name", $event.target.value)
                       }
                     }
-                  })
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "text-warning" }, [
+                    _vm._v(_vm._s(_vm.error.name))
+                  ])
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "form-group" }, [
@@ -23737,7 +23755,7 @@ var render = function() {
               {
                 staticClass: "btn btn-primary btn-sm",
                 attrs: { type: "button" },
-                on: { click: _vm.save }
+                on: { click: _vm.submit }
               },
               [_vm._v("SIMPAN")]
             ),
@@ -23843,7 +23861,7 @@ var render = function() {
                         "dataTables_wrapper container-fluid dt-bootstrap4"
                     },
                     [
-                      _c("filter-top"),
+                      _c("filter-top", { attrs: { filter: _vm.propsFilter } }),
                       _vm._v(" "),
                       _c("div", { staticClass: "row" }, [
                         _c("div", { staticClass: "col-sm-12" }, [
@@ -23899,11 +23917,11 @@ var render = function() {
                                               "a",
                                               {
                                                 staticClass:
-                                                  "btn btn-link btn-waring",
+                                                  "btn btn-link btn-success",
                                                 attrs: { title: "Edit" },
                                                 on: {
                                                   click: function($event) {
-                                                    return _vm.getById(item.id)
+                                                    return _vm.edit(item.id)
                                                   }
                                                 }
                                               },
@@ -23947,7 +23965,7 @@ var render = function() {
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("pagination")
+                      _c("pagination", { attrs: { filter: _vm.propsFilter } })
                     ],
                     1
                   )
@@ -23958,7 +23976,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("form-modal", { attrs: { religion: _vm.religion } })
+      _c("form-modal", { attrs: { religion: _vm.religion, error: _vm.error } })
     ],
     1
   )
@@ -24007,7 +24025,7 @@ var staticRenderFns = [
         _c(
           "th",
           {
-            staticClass: "sorting_asc",
+            staticClass: "sorting_asc text-center",
             attrs: {
               tabindex: "0",
               "aria-controls": "multi-filter-select",
@@ -24095,7 +24113,7 @@ var staticRenderFns = [
           [_vm._v("Tanggal")]
         ),
         _vm._v(" "),
-        _c("th", [_vm._v("Aksi")])
+        _c("th", { staticClass: "text-center" }, [_vm._v("Aksi")])
       ]),
       _vm._v(" "),
       _c("tr")
@@ -39616,74 +39634,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/halper/alert.js":
-/*!**************************************!*\
-  !*** ./resources/js/halper/alert.js ***!
-  \**************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-var alert = {
-  Success: Success,
-  Warning: Warning,
-  Error: Error,
-  Info: Info,
-  Confirm: Confirm
-};
-
-function Success() {
-  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  swal("Berhasil!", message, {
-    icon: "success",
-    buttons: {
-      confirm: {
-        className: 'btn btn-success'
-      }
-    }
-  });
-}
-
-function Warning() {
-  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-}
-
-function Error() {
-  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-}
-
-function Info() {
-  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-}
-
-function Confirm(message) {
-  return new Promise(function (resolve) {
-    swal({
-      title: 'Apakah anda yakin?',
-      text: message + "!",
-      type: 'warning',
-      buttons: {
-        confirm: {
-          text: 'Lanjutkan',
-          className: 'btn btn-success'
-        },
-        cancel: {
-          visible: true,
-          text: 'Batal',
-          className: 'btn btn-danger'
-        }
-      }
-    }).then(function (response) {
-      resolve(response);
-    });
-  });
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (alert);
-
-/***/ }),
-
 /***/ "./resources/js/halper/config.js":
 /*!***************************************!*\
   !*** ./resources/js/halper/config.js ***!
@@ -39706,7 +39656,8 @@ var config = {
       all: "religion/all",
       save: "religion/save",
       "delete": "religion/delete",
-      getById: "religion/getById"
+      getById: "religion/getById",
+      update: "religion/update/"
     } //   user: "user/users",
     //   navigation: "general/navigation",
     //   religion: "warga/wargas",
@@ -39730,6 +39681,10 @@ var config = {
     radio: "radio",
     number: "number",
     date: "date"
+  },
+  Grid: {
+    show: [10, 25, 50, 100],
+    defaultShow: 10
   }
 };
 /* harmony default export */ __webpack_exports__["default"] = (config);
@@ -39784,7 +39739,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./config.js */ "./resources/js/halper/config.js");
 /* harmony import */ var _handleSevice_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./handleSevice.js */ "./resources/js/halper/handleSevice.js");
-// import Vue from 'vue'
 
 
 
@@ -39808,6 +39762,95 @@ function Get(urlRoute) {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (httpService);
+
+/***/ }),
+
+/***/ "./resources/js/halper/prototype.js":
+/*!******************************************!*\
+  !*** ./resources/js/halper/prototype.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var prototype = {
+  IsNull: IsNull
+};
+
+function IsNull(value) {
+  return value == null || value == "" || value == undefined ? true : false;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (prototype);
+
+/***/ }),
+
+/***/ "./resources/js/halper/sweetalert.js":
+/*!*******************************************!*\
+  !*** ./resources/js/halper/sweetalert.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var s_alert = {
+  Success: Success,
+  Warning: Warning,
+  Error: Error,
+  Info: Info,
+  Confirm: Confirm
+};
+
+function Success() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+  swal("Berhasil!", message, {
+    icon: "success",
+    buttons: {
+      confirm: {
+        className: 'btn btn-success'
+      }
+    }
+  });
+}
+
+function Warning() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+}
+
+function Error() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+}
+
+function Info() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+}
+
+function Confirm(message) {
+  return new Promise(function (resolve) {
+    swal({
+      title: 'Apakah anda yakin?',
+      text: message + "!",
+      type: 'warning',
+      buttons: {
+        confirm: {
+          text: 'Lanjutkan',
+          className: 'btn btn-success'
+        },
+        cancel: {
+          visible: true,
+          text: 'Batal',
+          className: 'btn btn-danger'
+        }
+      }
+    }).then(function (response) {
+      resolve(response);
+    });
+  });
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (s_alert);
 
 /***/ }),
 

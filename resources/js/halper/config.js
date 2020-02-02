@@ -12,6 +12,7 @@ const config = {
             save:"religion/save",
             delete:"religion/delete",
             getById:"religion/getById",
+            update:"religion/update/",
 
       }
     //   user: "user/users",
@@ -36,6 +37,10 @@ const config = {
       radio: "radio",
       number: "number",
       date: "date"
+    },
+    Grid:{
+      show:[10,25,50,100],
+      defaultShow:10,
     }
   };
   export default config;

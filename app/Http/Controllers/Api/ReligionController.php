@@ -26,7 +26,7 @@ class ReligionController extends Controller
        ///$religion = new Religion();
         // $filter = new FilterBuilder();
         // $resut = $filter->filterBuilder($warga,$request);
-         return $this->religion->all();
+         return $this->religion->all($request);
     }
 
    
@@ -96,7 +96,8 @@ class ReligionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->religion->update($id,$request);
+        return response()->json(['success'=> $this-> success], $this-> successStatus);
     }
 
     /**

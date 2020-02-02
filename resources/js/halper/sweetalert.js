@@ -1,5 +1,5 @@
 
-const  alert = {
+const  s_alert = {
     Success,
     Warning,
     Error,
@@ -50,4 +50,4 @@ function Confirm(message){
 });
 }
 
-export default alert;
+export default s_alert;
