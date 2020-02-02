@@ -22302,10 +22302,10 @@ var render = function() {
             [
               _vm._m(1),
               _vm._v(" "),
-              _vm._l(_vm.filter.pages, function(x) {
+              _vm._l(_vm.filter.pages, function(x, i) {
                 return _c(
                   "li",
-                  { key: x, staticClass: "paginate_button page-item active" },
+                  { key: i, staticClass: "paginate_button page-item active" },
                   [
                     _c(
                       "a",

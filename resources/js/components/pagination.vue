@@ -7,7 +7,7 @@
             <div class="dataTables_paginate paging_simple_numbers" id="multi-filter-select_paginate">
                 <ul class="pagination">
                     <li class="paginate_button page-item previous disabled" id="multi-filter-select_previous"><a href="#" aria-controls="multi-filter-select" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
-                    <li  v-for="x  in filter.pages " :key="x" 
+                    <li  v-for="(x, i)  in filter.pages " :key="i" 
                         class="paginate_button page-item active">
                         <a href="#" aria-controls="multi-filter-select" data-dt-idx="1" tabindex="0" class="page-link">
                         {{x}}
