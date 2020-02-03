@@ -9,7 +9,7 @@
 						<div class="info">
 							<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 								<span>
-									Hizrian
+									Admin
 									<span class="user-level">Administrator</span>
 									<span class="caret"></span>
 								</span>
@@ -54,10 +54,10 @@
 						<li class="nav-item">
 							<a data-toggle="collapse" href="#base">
 								<i class="fas fa-layer-group"></i>
-								<p>Base</p>
-								<span class="caret"></span>
+								<p>Data Capil</p>
+								<!-- <span class="caret"></span> -->
 							</a>
-							<div class="collapse" id="base">
+							<!-- <div class="collapse" id="base">
 								<ul class="nav nav-collapse">
 									<li>
 										<a href="components/avatars.html">
@@ -69,7 +69,7 @@
 											<span class="sub-item">Buttons</span>
 										</a>
 									</li>
-									<li>
+									 <li>
 										<a href="components/gridsystem.html">
 											<span class="sub-item">Grid System</span>
 										</a>
@@ -105,19 +105,25 @@
 										</a>
 									</li>
 								</ul>
-							</div>
+							</div> -->
 						</li>
 						<li class="nav-item">
 							<a data-toggle="collapse" href="#forms">
 								<i class="fas fa-pen-square"></i>
-								<p>Forms</p>
+								<p>Surat</p>
 								<span class="caret"></span>
 							</a>
 							<div class="collapse" id="forms">
 								<ul class="nav nav-collapse">
 									<li>
 										<a href="forms/forms.html">
-											<span class="sub-item">Basic Form</span>
+											<span class="sub-item">Upload Format Surat</span>
+										</a>
+									</li>
+
+									<li>
+										<a href="forms/forms.html">
+											<span class="sub-item">Cetak Surat</span>
 										</a>
 									</li>
 									
@@ -127,7 +133,7 @@
 						<li class="nav-item">
 							<a data-toggle="collapse" href="#tables">
 								<i class="fas fa-table"></i>
-								<p>Tables</p>
+								<p>Keuangan</p>
 								<span class="caret"></span>
 							</a>
 							<div class="collapse" id="tables">
@@ -148,7 +154,7 @@
 						<li class="nav-item">
 							<a data-toggle="collapse" href="#maps">
 								<i class="fas fa-map-marker-alt"></i>
-								<p>Maps</p>
+								<p>Batas Wilayah</p>
 								<span class="caret"></span>
 							</a>
 							<div class="collapse" id="maps">
@@ -234,7 +240,7 @@
 						<li class="nav-item">
 							<a data-toggle="collapse" href="#submenu">
 								<i class="fas fa-bars"></i>
-								<p>Menu Levels</p>
+								<p>Logout</p>
 								<span class="caret"></span>
 							</a>
 							<div class="collapse" id="submenu">
