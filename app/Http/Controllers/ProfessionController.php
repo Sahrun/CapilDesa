@@ -16,7 +16,7 @@ class ProfessionController extends Controller
     {
         $professions = Profession::All();
 
-        return $professions->toJson();
+        return $professions;
     }
 
     /**
@@ -37,7 +37,11 @@ class ProfessionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $insertpro = $request->all();
+
+        $profession = Profession::create($insertpro);
+
+        return $insertpro;
     }
 
     /**
@@ -46,9 +50,10 @@ class ProfessionController extends Controller
      * @param  \App\Profession  $profession
      * @return \Illuminate\Http\Response
      */
-    public function show(Profession $profession)
+    public function show($id)
     {
-        //
+        $profession = Profession::find($id);
+        return $profession;
     }
 
     /**
@@ -69,9 +74,18 @@ class ProfessionController extends Controller
      * @param  \App\Profession  $profession
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Profession $profession)
+    public function update(Request $request, $id)
     {
-        //
+        $insertpro = $request->all();
+
+        $profession = Profession::find($id);
+
+        if(empty($profession)){
+            return response()->json(['message'=>'Data Tidak di Temukan !'],404);
+        }
+
+        $profession->update($insertpro);
+        return response()->json($profession);
     }
 
     /**
@@ -80,8 +94,15 @@ class ProfessionController extends Controller
      * @param  \App\Profession  $profession
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Profession $profession)
+    public function destroy($id)
     {
-        //
+        $profession = Profession::find($id);
+
+        if(empty($profession)){
+            return response()->json(['message'=>'Data Tidak ditemukan !']); 
+        }
+
+        $profession->delete();
+        return response()->json(['message'=>'Data Berhasil dihapus !']);
     }
 }
