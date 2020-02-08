@@ -23997,7 +23997,7 @@ var render = function() {
                                     [_vm._v("Tanggal")]
                                   ),
                                   _vm._v(" "),
-                                  _c("th", { staticStyle: { width: "50px" } })
+                                  _c("th")
                                 ]),
                                 _vm._v(" "),
                                 _vm._m(1)
@@ -24190,7 +24190,7 @@ var staticRenderFns = [
       _c("th", [
         _c("input", {
           staticClass: "form-control form-control-sm",
-          attrs: { type: "text" }
+          attrs: { type: "date" }
         })
       ]),
       _vm._v(" "),

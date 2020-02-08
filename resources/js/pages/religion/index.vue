@@ -50,7 +50,7 @@
                                                         <th v-bind:class="[sorting('created_at')]" @click="Onsorting('created_at')" >Tanggal</th>
                                                         <th v-bind:class="[sorting('modified_by')]" @click="Onsorting('modified_by')" >Dirubah oleh</th>
                                                         <th v-bind:class="[sorting('updated_at')]" @click="Onsorting('updated_at')" >Tanggal</th>
-                                                        <th style="width:50px;"></th>
+                                                        <th></th>
                                                     </tr>
                                                     <tr>
                                                         <th></th>
@@ -72,7 +72,7 @@
                                                             <input type="text" class="form-control form-control-sm"/>
                                                         </th>
                                                         <th>
-                                                             <input type="text" class="form-control form-control-sm"/>
+                                                             <input type="date" class="form-control form-control-sm"/>
                                                         </th>
                                                         <th></th>
                                                     </tr>
