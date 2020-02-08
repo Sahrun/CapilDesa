@@ -12,7 +12,8 @@ public $sparator = "/";
 
     $response = array(
                 'data' => null,
-                'pages' => null
+                'pages' => null,
+                'count' => null
     );
     
     $centralData = $centralData->newQuery();
@@ -28,28 +29,39 @@ public $sparator = "/";
     //    }
     //  }
 
-    //  if(isset($filterUri->page))
-    //  {
-    //    if(isset($filterUri->count))
-    //    {
-    //     $centralData->offset(($filterUri->page * $filterUri->count));
-    //    }
-    //    else
-    //    {
-    //     $centralData->offset($filterUri->page);
-    //    }
-    //  }
+      if(isset($filterUri->order_by))
+    {
+        $order = isset($filterUri->order)?$filterUri->order:'asc';
+        $centralData->orderBy($filterUri->order_by, $order);
+    }
 
-    //  if(isset($filterUri->count))
-    //  {
-    //    $centralData->limit($filterUri->count);
-    //  }
+    $result = $centralData;
+    $count = count($result->get());
+    $pages =  ceil($count / $filterUri->show);
 
-    $result = $centralData->get();
-    $pages =  ceil(count($result) / $filterUri->show);
+     if(isset($filterUri->page) && $filterUri->page > 0)
+     {
+       if(isset($filterUri->show))
+       {
+        $centralData->offset(($filterUri->page * $filterUri->show));
+       }
+    
+       else
+       {
+        $centralData->offset($filterUri->page);
+       }
+     }
 
-    $response['data'] = $result;
+     
+    if(isset($filterUri->show))
+    {
+      $centralData->limit($filterUri->show);
+    }
+
+    $response['data'] = $centralData->get();
     $response['pages'] = $pages;
+    $response['count'] = $count;
+    
 
     return $response;    
  }

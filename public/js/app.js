@@ -1984,6 +1984,12 @@ __webpack_require__.r(__webpack_exports__);
     return {
       showList: _halper_config__WEBPACK_IMPORTED_MODULE_0__["default"].Grid.show
     };
+  },
+  methods: {
+    Show: function Show() {
+      this.filter.page = 0;
+      this.$parent.loadData();
+    }
   }
 });
 
@@ -2550,7 +2556,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['filter']
+  props: ['filter'],
+  methods: {
+    OnPage: function OnPage(page) {
+      this.filter.page = page;
+      this.$parent.loadData();
+    }
+  }
 });
 
 /***/ }),
@@ -3309,20 +3321,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -3351,8 +3349,12 @@ function error() {
       propsFilter: {
         show: _halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].Grid.defaultShow,
         search: null,
-        page: null,
-        pages: null
+        page: 0,
+        pages: null,
+        count: 0,
+        count_page: 0,
+        sorting_by: 'name',
+        sorting: 'asc'
       }
     };
   },
@@ -3364,10 +3366,12 @@ function error() {
       var _this = this;
 
       $("#loading").show();
-      var param = "?show=" + this.propsFilter.show;
+      var param = "?show=" + this.propsFilter.show + "&page=" + this.propsFilter.page + "&order_by=" + this.propsFilter.sorting_by + "&order=" + this.propsFilter.sorting;
       _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Get(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.all, param).then(function (response) {
         _this.religions = response.data;
         _this.propsFilter.pages = response.pages;
+        _this.propsFilter.count = response.count;
+        _this.propsFilter.count_page = response.data.length;
         $("#loading").hide();
       });
     },
@@ -3422,6 +3426,20 @@ function error() {
         _this5.error = new error();
         $("#formModal").modal('show');
       });
+    },
+    Onsorting: function Onsorting(column) {
+      this.propsFilter.sorting = this.propsFilter.sorting == 'desc' ? 'asc' : 'desc';
+      this.propsFilter.sorting_by = column;
+      this.loadData();
+    },
+    sorting: function sorting(column) {
+      var sort = 'sorting';
+
+      if (column == this.propsFilter.sorting_by) {
+        sort = this.propsFilter.sorting == 'asc' ? 'sorting_desc' : 'sorting_asc';
+      }
+
+      return sort;
     }
   },
   components: {
@@ -21095,21 +21113,26 @@ var render = function() {
                   "aria-controls": "multi-filter-select"
                 },
                 on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.$set(
-                      _vm.filter,
-                      "show",
-                      $event.target.multiple ? $$selectedVal : $$selectedVal[0]
-                    )
-                  }
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.$set(
+                        _vm.filter,
+                        "show",
+                        $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      )
+                    },
+                    _vm.Show
+                  ]
                 }
               },
               _vm._l(_vm.showList, function(row, index) {
@@ -22286,7 +22309,32 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "row" }, [
-    _vm._m(0),
+    _c("div", { staticClass: "col-sm-12 col-md-5" }, [
+      _c(
+        "div",
+        {
+          staticClass: "dataTables_info",
+          attrs: {
+            id: "multi-filter-select_info",
+            role: "status",
+            "aria-live": "polite"
+          }
+        },
+        [
+          _vm._v("Showing "),
+          _c("b", [_vm._v(_vm._s(_vm.filter.page * _vm.filter.show + 1))]),
+          _vm._v(" to "),
+          _c("b", [
+            _vm._v(
+              _vm._s(_vm.filter.page * _vm.filter.show + _vm.filter.count_page)
+            )
+          ]),
+          _vm._v(" of "),
+          _c("b", [_vm._v(_vm._s(_vm.filter.count))]),
+          _vm._v(" entries")
+        ]
+      )
+    ]),
     _vm._v(" "),
     _c("div", { staticClass: "col-sm-12 col-md-7" }, [
       _c(
@@ -22300,22 +22348,57 @@ var render = function() {
             "ul",
             { staticClass: "pagination" },
             [
-              _vm._m(1),
+              _c(
+                "li",
+                {
+                  staticClass: "paginate_button page-item previous",
+                  class: [_vm.filter.page <= 0 ? "disabled" : ""],
+                  attrs: { id: "multi-filter-select_previous" }
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "page-link",
+                      attrs: {
+                        href: "#",
+                        "aria-controls": "multi-filter-select",
+                        "data-dt-idx": "0",
+                        tabindex: "0"
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.OnPage(_vm.filter.page - 1)
+                        }
+                      }
+                    },
+                    [_vm._v("Previous")]
+                  )
+                ]
+              ),
               _vm._v(" "),
               _vm._l(_vm.filter.pages, function(x, i) {
                 return _c(
                   "li",
-                  { key: i, staticClass: "paginate_button page-item active" },
+                  {
+                    key: i,
+                    staticClass: "paginate_button page-item",
+                    class: [_vm.filter.page == i ? "active" : ""]
+                  },
                   [
                     _c(
                       "a",
                       {
                         staticClass: "page-link",
                         attrs: {
-                          href: "#",
                           "aria-controls": "multi-filter-select",
                           "data-dt-idx": "1",
                           tabindex: "0"
+                        },
+                        on: {
+                          click: function($event) {
+                            return _vm.OnPage(i)
+                          }
                         }
                       },
                       [
@@ -22330,7 +22413,36 @@ var render = function() {
                 )
               }),
               _vm._v(" "),
-              _vm._m(2)
+              _c(
+                "li",
+                {
+                  staticClass: "paginate_button page-item next",
+                  class: [
+                    _vm.filter.pages <= _vm.filter.page + 1 ? "disabled" : ""
+                  ],
+                  attrs: { id: "multi-filter-select_next" }
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "page-link",
+                      attrs: {
+                        href: "#",
+                        "aria-controls": "multi-filter-select",
+                        "data-dt-idx": "8",
+                        tabindex: "0"
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.OnPage(_vm.filter.page + 1)
+                        }
+                      }
+                    },
+                    [_vm._v("Next")]
+                  )
+                ]
+              )
             ],
             2
           )
@@ -22339,81 +22451,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-sm-12 col-md-5" }, [
-      _c(
-        "div",
-        {
-          staticClass: "dataTables_info",
-          attrs: {
-            id: "multi-filter-select_info",
-            role: "status",
-            "aria-live": "polite"
-          }
-        },
-        [_vm._v("Showing 1 to 5 of 57 entries")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "li",
-      {
-        staticClass: "paginate_button page-item previous disabled",
-        attrs: { id: "multi-filter-select_previous" }
-      },
-      [
-        _c(
-          "a",
-          {
-            staticClass: "page-link",
-            attrs: {
-              href: "#",
-              "aria-controls": "multi-filter-select",
-              "data-dt-idx": "0",
-              tabindex: "0"
-            }
-          },
-          [_vm._v("Previous")]
-        )
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "li",
-      {
-        staticClass: "paginate_button page-item next",
-        attrs: { id: "multi-filter-select_next" }
-      },
-      [
-        _c(
-          "a",
-          {
-            staticClass: "page-link",
-            attrs: {
-              href: "#",
-              "aria-controls": "multi-filter-select",
-              "data-dt-idx": "8",
-              tabindex: "0"
-            }
-          },
-          [_vm._v("Next")]
-        )
-      ]
-    )
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -23877,7 +23915,93 @@ var render = function() {
                               }
                             },
                             [
-                              _vm._m(1),
+                              _c("thead", [
+                                _c("tr", { attrs: { role: "row" } }, [
+                                  _c("th", [_vm._v("No")]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "th",
+                                    {
+                                      class: [_vm.sorting("name")],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.Onsorting("name")
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Agama")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "th",
+                                    {
+                                      class: [_vm.sorting("is_active")],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.Onsorting("is_active")
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Status")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "th",
+                                    {
+                                      class: [_vm.sorting("created_by")],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.Onsorting("created_by")
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Dibuat oleh")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "th",
+                                    {
+                                      class: [_vm.sorting("created_at")],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.Onsorting("created_at")
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Tanggal")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "th",
+                                    {
+                                      class: [_vm.sorting("modified_by")],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.Onsorting("modified_by")
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Dirubah oleh")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "th",
+                                    {
+                                      class: [_vm.sorting("updated_at")],
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.Onsorting("updated_at")
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Tanggal")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("th", { staticStyle: { width: "50px" } })
+                                ]),
+                                _vm._v(" "),
+                                _vm._m(1)
+                              ]),
                               _vm._v(" "),
                               _c(
                                 "tbody",
@@ -23890,7 +24014,15 @@ var render = function() {
                                       attrs: { role: "row" }
                                     },
                                     [
-                                      _c("td", [_vm._v(_vm._s(index + 1))]),
+                                      _c("td", [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm.propsFilter.show *
+                                              _vm.propsFilter.page +
+                                              (index + 1)
+                                          )
+                                        )
+                                      ]),
                                       _vm._v(" "),
                                       _c("td", [_vm._v(_vm._s(item.name))]),
                                       _vm._v(" "),
@@ -24018,105 +24150,51 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", { attrs: { role: "row" } }, [
-        _c("th", [_vm._v("No")]),
-        _vm._v(" "),
-        _c(
-          "th",
-          {
-            staticClass: "sorting_asc text-center",
-            attrs: {
-              tabindex: "0",
-              "aria-controls": "multi-filter-select",
-              rowspan: "1",
-              colspan: "1",
-              "aria-sort": "ascending",
-              "aria-label": "Name: activate to sort column descending"
-            }
-          },
-          [_vm._v("Agama")]
-        ),
-        _vm._v(" "),
-        _c(
-          "th",
-          {
-            staticClass: "sorting",
-            attrs: {
-              tabindex: "0",
-              "aria-controls": "multi-filter-select",
-              rowspan: "1",
-              colspan: "1",
-              "aria-label": "Position: activate to sort column ascending"
-            }
-          },
-          [_vm._v("Status")]
-        ),
-        _vm._v(" "),
-        _c(
-          "th",
-          {
-            staticClass: "sorting",
-            attrs: {
-              tabindex: "0",
-              "aria-controls": "multi-filter-select",
-              rowspan: "1",
-              colspan: "1",
-              "aria-label": "Office: activate to sort column ascending"
-            }
-          },
-          [_vm._v("Dibuat oleh")]
-        ),
-        _vm._v(" "),
-        _c(
-          "th",
-          {
-            staticClass: "sorting",
-            attrs: {
-              tabindex: "0",
-              "aria-controls": "multi-filter-select",
-              rowspan: "1",
-              colspan: "1",
-              "aria-label": "Age: activate to sort column ascending"
-            }
-          },
-          [_vm._v("Tanggal")]
-        ),
-        _vm._v(" "),
-        _c(
-          "th",
-          {
-            staticClass: "sorting",
-            attrs: {
-              tabindex: "0",
-              "aria-controls": "multi-filter-select",
-              rowspan: "1",
-              colspan: "1",
-              "aria-label": "Start date: activate to sort column ascending"
-            }
-          },
-          [_vm._v("Dirubah oleh")]
-        ),
-        _vm._v(" "),
-        _c(
-          "th",
-          {
-            staticClass: "sorting",
-            attrs: {
-              tabindex: "0",
-              "aria-controls": "multi-filter-select",
-              rowspan: "1",
-              colspan: "1",
-              "aria-label": "Salary: activate to sort column ascending"
-            }
-          },
-          [_vm._v("Tanggal")]
-        ),
-        _vm._v(" "),
-        _c("th", { staticClass: "text-center" }, [_vm._v("Aksi")])
+    return _c("tr", [
+      _c("th"),
+      _vm._v(" "),
+      _c("th", [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text" }
+        })
       ]),
       _vm._v(" "),
-      _c("tr")
+      _c("th", [
+        _c("select", { staticClass: "form-control form-control-sm" }, [
+          _c("option", { attrs: { value: "" } })
+        ])
+      ]),
+      _vm._v(" "),
+      _c("th", [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text" }
+        })
+      ]),
+      _vm._v(" "),
+      _c("th", [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "date" }
+        })
+      ]),
+      _vm._v(" "),
+      _c("th", [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text" }
+        })
+      ]),
+      _vm._v(" "),
+      _c("th", [
+        _c("input", {
+          staticClass: "form-control form-control-sm",
+          attrs: { type: "text" }
+        })
+      ]),
+      _vm._v(" "),
+      _c("th")
     ])
   }
 ]

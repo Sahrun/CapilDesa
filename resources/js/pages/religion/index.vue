@@ -44,56 +44,42 @@
                                                 <thead>
                                                     <tr role="row">
                                                         <th>No</th>
-                                                        <th class="sorting_asc text-center" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Agama</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Status</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" >Dibuat oleh</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" >Tanggal</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" >Dirubah oleh</th>
-                                                        <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" >Tanggal</th>
-                                                        <th class="text-center">Aksi</th>
+                                                        <th v-bind:class="[sorting('name')]"  @click="Onsorting('name')" >Agama</th>
+                                                        <th v-bind:class="[sorting('is_active')]" @click="Onsorting('is_active')" >Status</th>
+                                                        <th v-bind:class="[sorting('created_by')]" @click="Onsorting('created_by')" >Dibuat oleh</th>
+                                                        <th v-bind:class="[sorting('created_at')]" @click="Onsorting('created_at')" >Tanggal</th>
+                                                        <th v-bind:class="[sorting('modified_by')]" @click="Onsorting('modified_by')" >Dirubah oleh</th>
+                                                        <th v-bind:class="[sorting('updated_at')]" @click="Onsorting('updated_at')" >Tanggal</th>
+                                                        <th style="width:50px;"></th>
                                                     </tr>
                                                     <tr>
-                                                        <!-- <th rowspan="1" colspan="1">
-                                                            <select class="form-control">
+                                                        <th></th>
+                                                        <th>
+                                                            <input type="text" class="form-control form-control-sm"/>
+                                                        </th>
+                                                        <th>
+                                                            <select class="form-control form-control-sm">
                                                                 <option value=""></option>
                                                             </select>
                                                         </th>
-                                                        <th rowspan="1" colspan="1">
-                                                            <select class="form-control">
-                                                                <option value=""></option>
-                                                            </select>
+                                                        <th>
+                                                             <input type="text" class="form-control form-control-sm"/>
                                                         </th>
-                                                        <th rowspan="1" colspan="1">
-                                                            <select class="form-control">
-                                                                <option value=""></option>
-                                                            </select>
+                                                        <th>
+                                                             <input type="date" class="form-control form-control-sm"/>
                                                         </th>
-                                                        <th rowspan="1" colspan="1">
-                                                            <select class="form-control">
-                                                                <option value=""></option>
-                                                                <option value="19">19</option>
-                                                                <option value="20">20</option>
-                                                            </select>
+                                                        <th >
+                                                            <input type="text" class="form-control form-control-sm"/>
                                                         </th>
-                                                        <th rowspan="1" colspan="1">
-                                                            <select class="form-control">
-                                                                <option value=""></option>
-                                                                <option value="2008/09/26">2008/09/26</option>
-                                                                <option value="2008/10/16">2008/10/16</option>
-                                                            </select>
+                                                        <th>
+                                                             <input type="text" class="form-control form-control-sm"/>
                                                         </th>
-                                                        <th rowspan="1" colspan="1">
-                                                            <select class="form-control">
-                                                                <option value=""></option>
-                                                                <option value="$1,200,000">$1,200,000</option>
-                                                                <option value="$103,500">$103,500</option>
-                                                            </select>
-                                                        </th> -->
+                                                        <th></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr role="row" class="{index%2? 'odd':'even'}" v-for="(item, index) in religions" :key="index">
-                                                        <td>{{index+1}}</td>
+                                                        <td>{{(((propsFilter.show) * propsFilter.page) + (index+1))}}</td>
                                                         <td>{{item.name}}</td>
                                                         <td>{{item.active}}</td>
                                                         <td>{{item.created}}</td>
@@ -165,9 +151,15 @@
                 propsFilter:{
                     show:config.Grid.defaultShow,
                     search:null,
-                    page:null,
-                    pages:null
-                }
+                    page:0,
+                    pages:null,
+                    count:0,
+                    count_page:0,
+                    sorting_by:'name',
+                    sorting:'asc',
+
+                },
+
             }
         },
         created() {
@@ -176,11 +168,13 @@
         methods: {
             loadData(){
                $("#loading").show();
-                var param ="?show="+this.propsFilter.show;
+                var param ="?show="+this.propsFilter.show+"&page="+this.propsFilter.page+"&order_by="+this.propsFilter.sorting_by+"&order="+this.propsFilter.sorting;
                 httpService.Get(config.routeApi.religion.all,param).then((response)=>
                 {
                    this.religions = response.data;
                    this.propsFilter.pages = response.pages;
+                   this.propsFilter.count = response.count;
+                   this.propsFilter.count_page = response.data.length;
                    $("#loading").hide();
                 })
             },
@@ -230,7 +224,19 @@
                     this.error = new error;
                     $("#formModal").modal('show');
                 });
-           }
+           },
+        Onsorting(column){
+             this.propsFilter.sorting = this.propsFilter.sorting == 'desc'?'asc':'desc';
+             this.propsFilter.sorting_by = column;
+             this.loadData();
+        },
+        sorting(column){
+            var sort ='sorting';
+            if(column == this.propsFilter.sorting_by){
+                sort = this.propsFilter.sorting == 'asc'? 'sorting_desc':'sorting_asc'
+            }
+            return sort;
+        }
         },
        components: {
             'form-modal': formModal,

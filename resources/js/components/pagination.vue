@@ -1,25 +1,25 @@
 <template>
     <div class="row">
         <div class="col-sm-12 col-md-5">
-            <div class="dataTables_info" id="multi-filter-select_info" role="status" aria-live="polite">Showing 1 to 5 of 57 entries</div>
+            <div class="dataTables_info" id="multi-filter-select_info" role="status" 
+            aria-live="polite">Showing <b>{{((filter.page * filter.show) + 1)}}</b> to <b>{{((filter.page * filter.show)) + filter.count_page}}</b> of <b>{{filter.count}}</b> entries</div>
         </div>
         <div class="col-sm-12 col-md-7">
             <div class="dataTables_paginate paging_simple_numbers" id="multi-filter-select_paginate">
                 <ul class="pagination">
-                    <li class="paginate_button page-item previous disabled" id="multi-filter-select_previous"><a href="#" aria-controls="multi-filter-select" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
+                    <li class="paginate_button page-item previous" v-bind:class="[filter.page <= 0 ? 'disabled' : '']"
+                     id="multi-filter-select_previous"><a href="#" aria-controls="multi-filter-select" 
+                     data-dt-idx="0" tabindex="0" class="page-link" @click="OnPage(filter.page - 1)"
+                     >Previous</a></li>
                     <li  v-for="(x, i)  in filter.pages " :key="i" 
-                        class="paginate_button page-item active">
-                        <a href="#" aria-controls="multi-filter-select" data-dt-idx="1" tabindex="0" class="page-link">
+                        class="paginate_button page-item" v-bind:class="[filter.page == i ? 'active' : '']">
+                        <a aria-controls="multi-filter-select" data-dt-idx="1" tabindex="0" class="page-link" @click="OnPage(i)">
                         {{x}}
                         </a>
                         </li>
-                    <!-- <li class="paginate_button page-item "><a href="#" aria-controls="multi-filter-select" data-dt-idx="2" tabindex="0" class="page-link">2</a></li>
-                    <li class="paginate_button page-item "><a href="#" aria-controls="multi-filter-select" data-dt-idx="3" tabindex="0" class="page-link">3</a></li>
-                    <li class="paginate_button page-item "><a href="#" aria-controls="multi-filter-select" data-dt-idx="4" tabindex="0" class="page-link">4</a></li>
-                    <li class="paginate_button page-item "><a href="#" aria-controls="multi-filter-select" data-dt-idx="5" tabindex="0" class="page-link">5</a></li>
-                    <li class="paginate_button page-item disabled" id="multi-filter-select_ellipsis"><a href="#" aria-controls="multi-filter-select" data-dt-idx="6" tabindex="0" class="page-link">…</a></li>
-                    <li class="paginate_button page-item "><a href="#" aria-controls="multi-filter-select" data-dt-idx="7" tabindex="0" class="page-link">12</a></li> -->
-                    <li class="paginate_button page-item next" id="multi-filter-select_next"><a href="#" aria-controls="multi-filter-select" data-dt-idx="8" tabindex="0" class="page-link">Next</a></li>
+                    <li class="paginate_button page-item next" 
+                    id="multi-filter-select_next" v-bind:class="[filter.pages <= (filter.page + 1) ? 'disabled' : '']"><a href="#" 
+                    aria-controls="multi-filter-select" data-dt-idx="8" tabindex="0" class="page-link" @click="OnPage(filter.page + 1)">Next</a></li>
                 </ul>
             </div>
         </div>
@@ -27,7 +27,13 @@
 </template>
 <script>
     export default {
-        props: ['filter']
+        props: ['filter'],
+        methods: {
+            OnPage(page){
+                this.filter.page=page;
+                this.$parent.loadData();
+            }
 
+        },
     }
 </script>

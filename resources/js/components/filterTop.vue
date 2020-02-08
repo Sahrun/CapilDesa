@@ -3,7 +3,7 @@
         <div class="col-sm-12 col-md-6">
             <div class="dataTables_length" id="multi-filter-select_length">
                 <label>Show
-                    <select name="multi-filter-select_length" 
+                    <select name="multi-filter-select_length" @change="Show"
                             aria-controls="multi-filter-select" 
                             class="form-control form-control-sm"
                             v-model="filter.show">
@@ -31,6 +31,12 @@
         return {
               showList:config.Grid.show,
             }
-        }
+        },
+        methods: {
+            Show() {
+                this.filter.page = 0;
+               this.$parent.loadData();
+            }
+        },
     }
 </script>
