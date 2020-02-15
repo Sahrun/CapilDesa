@@ -12,13 +12,18 @@
             </div>
         </div>
         <div class="col-sm-12 col-md-6">
-            <div id="multi-filter-select_filter" class="dataTables_filter">
-                <label>Search:
+            <div class="dataTables_filter">
+                <button class="btn btn-icon btn-primary btn-round btn-sm"
+                        @click="filter.showFilter = !filter.showFilter"
+                        title="filter">
+						<i class="fa fa-filter"></i>
+				</button>
+                <!-- <label>Search:
                     <input type="search" 
                     class="form-control form-control-sm"
                     placeholder="" aria-controls="multi-filter-select"
                     v-model="filter.search">
-                </label>
+                </label> -->
             </div>
         </div>
     </div>

@@ -18,16 +18,16 @@ public $sparator = "/";
     
     $centralData = $centralData->newQuery();
 
-    //  if(isset($filterUri->filter))
-    //  {
-    //    $filter  = explode(",",$filterUri->filter);
+     if(isset($filterUri->field))
+     {
+       $fields  = explode(",",$filterUri->field);
 
-    //    if(count($filter) !== 0){
+       if(count($fields) !== 0){
 
-    //     $centralData->where($this->generateFilter($filter));
+        $centralData->where($this->generateFilter($fields));
 
-    //    }
-    //  }
+       }
+     }
 
       if(isset($filterUri->order_by))
     {
@@ -66,23 +66,23 @@ public $sparator = "/";
     return $response;    
  }
 
- public function generateFilter($filters){
-    $filterResult = array();
+ public function generateFilter($fields){
+    $result = array();
 
-    foreach($filters as $key => $value)
+    foreach($fields as $key => $value)
     {
-            $filter = array();
+            $field = array();
             if(isset($value)){
 
               $row = explode($this->sparator,$value);
-              array_push($filter,$row[0]);
-              array_push($filter,$this->operation($row[1]));
-              array_push($filter,$row[1] == "like" ? $row[2]."%":$row[2]);
+              array_push($field,$row[0]);
+              array_push($field,$this->operation($row[1]));
+              array_push($field,$row[1] == "like" ? $row[2]."%":$row[2]);
           
-             array_push($filterResult,$filter);
+             array_push($result,$field);
            }
     } 
-  return $filterResult;
+  return $result;
 } 
    
 public function operation($oprt) {

@@ -1977,6 +1977,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['filter'],
@@ -3204,6 +3209,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_filterTop__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../components/filterTop */ "./resources/js/components/filterTop.vue");
 /* harmony import */ var _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../halper/sweetalert */ "./resources/js/halper/sweetalert.js");
 /* harmony import */ var _halper_prototype__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../halper/prototype */ "./resources/js/halper/prototype.js");
+/* harmony import */ var _halper_filterBuilder__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../halper/filterBuilder */ "./resources/js/halper/filterBuilder.js");
+/* harmony import */ var _halper_notification__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../halper/notification */ "./resources/js/halper/notification.js");
 //
 //
 //
@@ -3321,6 +3328,41 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -3331,6 +3373,12 @@ __webpack_require__.r(__webpack_exports__);
 
 function religionModel() {
   this.id = null, this.name = null, this.is_active = null, this.description = null, this.created_by = null, this.modified_by = null, this.created_at = null, this.updated_at = null;
+}
+
+;
+
+function filterModel() {
+  this.name = null, this.is_active = null, this.created_by = null, this.modified_by = null, this.created_at = null, this.updated_at = null;
 }
 
 ;
@@ -3354,7 +3402,9 @@ function error() {
         count: 0,
         count_page: 0,
         sorting_by: 'name',
-        sorting: 'asc'
+        sorting: 'asc',
+        showFilter: false,
+        Filter: new filterModel()
       }
     };
   },
@@ -3366,7 +3416,7 @@ function error() {
       var _this = this;
 
       $("#loading").show();
-      var param = "?show=" + this.propsFilter.show + "&page=" + this.propsFilter.page + "&order_by=" + this.propsFilter.sorting_by + "&order=" + this.propsFilter.sorting;
+      var param = _halper_filterBuilder__WEBPACK_IMPORTED_MODULE_7__["default"].generateFilter(this.paramFilter(), this.propsFilter);
       _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Get(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.all, param).then(function (response) {
         _this.religions = response.data;
         _this.propsFilter.pages = response.pages;
@@ -3388,7 +3438,7 @@ function error() {
 
       _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.save, this.religion).then(function (data) {
         $("#formModal").modal('hide');
-        _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__["default"].Success("data agama berhasil disimpan");
+        _halper_notification__WEBPACK_IMPORTED_MODULE_8__["default"].show("Data agama berhasil disimpan", _halper_notification__WEBPACK_IMPORTED_MODULE_8__["default"].type.SUCCESS, _halper_notification__WEBPACK_IMPORTED_MODULE_8__["default"].title.SUBMIT);
 
         _this2.loadData();
       });
@@ -3397,7 +3447,7 @@ function error() {
       var _this3 = this;
 
       _halper_httpService__WEBPACK_IMPORTED_MODULE_1__["default"].Post(_halper_config__WEBPACK_IMPORTED_MODULE_2__["default"].routeApi.religion.update + this.religion.id, this.religion).then(function (response) {
-        _halper_sweetalert__WEBPACK_IMPORTED_MODULE_5__["default"].Success("Data agama berhasil di update");
+        _halper_notification__WEBPACK_IMPORTED_MODULE_8__["default"].show("Data agama berhasil di update", _halper_notification__WEBPACK_IMPORTED_MODULE_8__["default"].type.SUCCESS, _halper_notification__WEBPACK_IMPORTED_MODULE_8__["default"].title.UPDATE);
         $("#formModal").modal('hide');
 
         _this3.loadData();
@@ -3440,6 +3490,67 @@ function error() {
       }
 
       return sort;
+    },
+    filterClear: function filterClear() {
+      this.propsFilter.Filter = new filterModel();
+      this.loadData();
+    },
+    OnFilter: function OnFilter() {
+      this.loadData();
+    },
+    paramFilter: function paramFilter() {
+      var ops = _halper_filterBuilder__WEBPACK_IMPORTED_MODULE_7__["default"].operation;
+      var filter = [];
+
+      if (!_halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.propsFilter.Filter.name)) {
+        filter.push({
+          field: "name",
+          operation: ops.like,
+          value: this.propsFilter.Filter.name
+        });
+      }
+
+      if (!_halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.propsFilter.Filter.is_active)) {
+        filter.push({
+          field: "is_active",
+          operation: ops.like,
+          value: this.propsFilter.Filter.is_active
+        });
+      }
+
+      if (!_halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.propsFilter.Filter.created_by)) {
+        filter.push({
+          field: "created_by",
+          operation: ops.like,
+          value: this.propsFilter.Filter.created_by
+        });
+      }
+
+      if (!_halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.propsFilter.Filter.created_at)) {
+        filter.push({
+          field: "created_at",
+          operation: ops.like,
+          value: this.propsFilter.Filter.created_at
+        });
+      }
+
+      if (!_halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.propsFilter.Filter.modified_by)) {
+        filter.push({
+          field: "modified_by",
+          operation: ops.like,
+          value: this.propsFilter.Filter.modified_by
+        });
+      }
+
+      if (!_halper_prototype__WEBPACK_IMPORTED_MODULE_6__["default"].IsNull(this.propsFilter.Filter.updated_at)) {
+        filter.push({
+          field: "updated_at",
+          operation: ops.like,
+          value: this.propsFilter.Filter.modified_by
+        });
+      }
+
+      return filter;
     }
   },
   components: {
@@ -21095,7 +21206,7 @@ var render = function() {
         },
         [
           _c("label", [
-            _vm._v("Show\n                "),
+            _vm._v("Show\n                    "),
             _c(
               "select",
               {
@@ -21149,43 +21260,21 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-      _c(
-        "div",
-        {
-          staticClass: "dataTables_filter",
-          attrs: { id: "multi-filter-select_filter" }
-        },
-        [
-          _c("label", [
-            _vm._v("Search:\n                "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.filter.search,
-                  expression: "filter.search"
-                }
-              ],
-              staticClass: "form-control form-control-sm",
-              attrs: {
-                type: "search",
-                placeholder: "",
-                "aria-controls": "multi-filter-select"
-              },
-              domProps: { value: _vm.filter.search },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(_vm.filter, "search", $event.target.value)
-                }
+      _c("div", { staticClass: "dataTables_filter" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-icon btn-primary btn-round btn-sm",
+            attrs: { title: "filter" },
+            on: {
+              click: function($event) {
+                _vm.filter.showFilter = !_vm.filter.showFilter
               }
-            })
-          ])
-        ]
-      )
+            }
+          },
+          [_c("i", { staticClass: "fa fa-filter" })]
+        )
+      ])
     ])
   ])
 }
@@ -23903,197 +23992,503 @@ var render = function() {
                       _vm._v(" "),
                       _c("div", { staticClass: "row" }, [
                         _c("div", { staticClass: "col-sm-12" }, [
-                          _c(
-                            "table",
-                            {
-                              staticClass:
-                                "display table table-striped table-hover dataTable",
-                              attrs: {
-                                id: "multi-filter-select",
-                                role: "grid",
-                                "aria-describedby": "multi-filter-select_info"
-                              }
-                            },
-                            [
-                              _c("thead", [
-                                _c("tr", { attrs: { role: "row" } }, [
-                                  _c("th", [_vm._v("No")]),
+                          _c("div", { staticClass: "table-responsive" }, [
+                            _c(
+                              "table",
+                              {
+                                staticClass:
+                                  "display table table-striped table-hover dataTable",
+                                attrs: {
+                                  role: "grid",
+                                  "aria-describedby": "multi-filter-select_info"
+                                }
+                              },
+                              [
+                                _c("thead", [
+                                  _c("tr", { attrs: { role: "row" } }, [
+                                    _c("th", [_vm._v("No")]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "th",
+                                      {
+                                        class: [_vm.sorting("name")],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.Onsorting("name")
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Agama")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "th",
+                                      {
+                                        class: [_vm.sorting("is_active")],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.Onsorting("is_active")
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Status")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "th",
+                                      {
+                                        class: [_vm.sorting("created_by")],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.Onsorting("created_by")
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Dibuat oleh")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "th",
+                                      {
+                                        class: [_vm.sorting("created_at")],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.Onsorting("created_at")
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Tanggal")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "th",
+                                      {
+                                        class: [_vm.sorting("modified_by")],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.Onsorting("modified_by")
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Dirubah oleh")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "th",
+                                      {
+                                        class: [_vm.sorting("updated_at")],
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.Onsorting("updated_at")
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("Tanggal")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c("th")
+                                  ]),
                                   _vm._v(" "),
                                   _c(
-                                    "th",
-                                    {
-                                      class: [_vm.sorting("name")],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.Onsorting("name")
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("Agama")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "th",
-                                    {
-                                      class: [_vm.sorting("is_active")],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.Onsorting("is_active")
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("Status")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "th",
-                                    {
-                                      class: [_vm.sorting("created_by")],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.Onsorting("created_by")
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("Dibuat oleh")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "th",
-                                    {
-                                      class: [_vm.sorting("created_at")],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.Onsorting("created_at")
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("Tanggal")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "th",
-                                    {
-                                      class: [_vm.sorting("modified_by")],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.Onsorting("modified_by")
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("Dirubah oleh")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "th",
-                                    {
-                                      class: [_vm.sorting("updated_at")],
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.Onsorting("updated_at")
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("Tanggal")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c("th")
-                                ]),
-                                _vm._v(" "),
-                                _vm._m(1)
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "tbody",
-                                _vm._l(_vm.religions, function(item, index) {
-                                  return _c(
                                     "tr",
                                     {
-                                      key: index,
-                                      staticClass: "{index%2? 'odd':'even'}",
-                                      attrs: { role: "row" }
+                                      directives: [
+                                        {
+                                          name: "show",
+                                          rawName: "v-show",
+                                          value: _vm.propsFilter.showFilter,
+                                          expression: "propsFilter.showFilter"
+                                        }
+                                      ]
                                     },
                                     [
-                                      _c("td", [
-                                        _vm._v(
-                                          _vm._s(
-                                            _vm.propsFilter.show *
-                                              _vm.propsFilter.page +
-                                              (index + 1)
-                                          )
-                                        )
+                                      _c("th", [_vm._v("#")]),
+                                      _vm._v(" "),
+                                      _c("th", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value:
+                                                _vm.propsFilter.Filter.name,
+                                              expression:
+                                                "propsFilter.Filter.name"
+                                            }
+                                          ],
+                                          staticClass:
+                                            "form-control form-control-sm",
+                                          attrs: { type: "text" },
+                                          domProps: {
+                                            value: _vm.propsFilter.Filter.name
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.OnFilter()
+                                            },
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                _vm.propsFilter.Filter,
+                                                "name",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
                                       ]),
                                       _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.name))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.active))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.created))]),
-                                      _vm._v(" "),
-                                      _c("td", [
-                                        _vm._v(_vm._s(item.created_at))
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.modified))]),
-                                      _vm._v(" "),
-                                      _c("td", [
-                                        _vm._v(_vm._s(item.modified_at))
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("td", [
+                                      _c("th", [
                                         _c(
-                                          "div",
-                                          { staticClass: "form-button-action" },
+                                          "select",
+                                          {
+                                            directives: [
+                                              {
+                                                name: "model",
+                                                rawName: "v-model",
+                                                value:
+                                                  _vm.propsFilter.Filter
+                                                    .is_active,
+                                                expression:
+                                                  "propsFilter.Filter.is_active"
+                                              }
+                                            ],
+                                            staticClass:
+                                              "form-control form-control-sm",
+                                            on: {
+                                              change: [
+                                                function($event) {
+                                                  var $$selectedVal = Array.prototype.filter
+                                                    .call(
+                                                      $event.target.options,
+                                                      function(o) {
+                                                        return o.selected
+                                                      }
+                                                    )
+                                                    .map(function(o) {
+                                                      var val =
+                                                        "_value" in o
+                                                          ? o._value
+                                                          : o.value
+                                                      return val
+                                                    })
+                                                  _vm.$set(
+                                                    _vm.propsFilter.Filter,
+                                                    "is_active",
+                                                    $event.target.multiple
+                                                      ? $$selectedVal
+                                                      : $$selectedVal[0]
+                                                  )
+                                                },
+                                                function($event) {
+                                                  return _vm.OnFilter()
+                                                }
+                                              ]
+                                            }
+                                          },
                                           [
                                             _c(
-                                              "a",
-                                              {
-                                                staticClass:
-                                                  "btn btn-link btn-success",
-                                                attrs: { title: "Edit" },
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.edit(item.id)
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _c("i", {
-                                                  staticClass: "fa fa-edit"
-                                                })
-                                              ]
+                                              "option",
+                                              { attrs: { value: "1" } },
+                                              [_vm._v("Active")]
                                             ),
                                             _vm._v(" "),
                                             _c(
-                                              "a",
-                                              {
-                                                staticClass:
-                                                  "btn btn-link btn-danger",
-                                                attrs: { title: "Hapus" },
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.deleteData(
-                                                      item.id
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _c("i", {
-                                                  staticClass: "fa fa-times"
-                                                })
-                                              ]
+                                              "option",
+                                              { attrs: { value: "0" } },
+                                              [_vm._v("Non-Active")]
                                             )
+                                          ]
+                                        )
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("th", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value:
+                                                _vm.propsFilter.Filter
+                                                  .created_by,
+                                              expression:
+                                                "propsFilter.Filter.created_by"
+                                            }
+                                          ],
+                                          staticClass:
+                                            "form-control form-control-sm",
+                                          attrs: { type: "text" },
+                                          domProps: {
+                                            value:
+                                              _vm.propsFilter.Filter.created_by
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.OnFilter()
+                                            },
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                _vm.propsFilter.Filter,
+                                                "created_by",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("th", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value:
+                                                _vm.propsFilter.Filter
+                                                  .created_at,
+                                              expression:
+                                                "propsFilter.Filter.created_at"
+                                            }
+                                          ],
+                                          staticClass:
+                                            "form-control form-control-sm",
+                                          attrs: { type: "date" },
+                                          domProps: {
+                                            value:
+                                              _vm.propsFilter.Filter.created_at
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.OnFilter()
+                                            },
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                _vm.propsFilter.Filter,
+                                                "created_at",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("th", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value:
+                                                _vm.propsFilter.Filter
+                                                  .modified_by,
+                                              expression:
+                                                "propsFilter.Filter.modified_by"
+                                            }
+                                          ],
+                                          staticClass:
+                                            "form-control form-control-sm",
+                                          attrs: { type: "text" },
+                                          domProps: {
+                                            value:
+                                              _vm.propsFilter.Filter.modified_by
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.OnFilter()
+                                            },
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                _vm.propsFilter.Filter,
+                                                "modified_by",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("th", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value:
+                                                _vm.propsFilter.Filter
+                                                  .updated_at,
+                                              expression:
+                                                "propsFilter.Filter.updated_at"
+                                            }
+                                          ],
+                                          staticClass:
+                                            "form-control form-control-sm",
+                                          attrs: { type: "date" },
+                                          domProps: {
+                                            value:
+                                              _vm.propsFilter.Filter.updated_at
+                                          },
+                                          on: {
+                                            change: function($event) {
+                                              return _vm.OnFilter()
+                                            },
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                _vm.propsFilter.Filter,
+                                                "updated_at",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("th", [
+                                        _c(
+                                          "button",
+                                          {
+                                            staticClass:
+                                              "btn btn-icon btn-danger btn-sm",
+                                            on: {
+                                              click: function($event) {
+                                                return _vm.filterClear()
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass: "fa fa-times"
+                                            })
                                           ]
                                         )
                                       ])
                                     ]
                                   )
-                                }),
-                                0
-                              )
-                            ]
-                          )
+                                ]),
+                                _vm._v(" "),
+                                _c(
+                                  "tbody",
+                                  _vm._l(_vm.religions, function(item, index) {
+                                    return _c(
+                                      "tr",
+                                      {
+                                        key: index,
+                                        class: [index % 2 ? "odd" : "even"],
+                                        attrs: { role: "row" }
+                                      },
+                                      [
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm.propsFilter.show *
+                                                _vm.propsFilter.page +
+                                                (index + 1)
+                                            )
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(item.name) +
+                                              " " +
+                                              _vm._s(index % 2)
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [_vm._v(_vm._s(item.active))]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(_vm._s(item.created))
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(_vm._s(item.created_at))
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(_vm._s(item.modified))
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(_vm._s(item.modified_at))
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _c(
+                                            "div",
+                                            {
+                                              staticClass: "form-button-action"
+                                            },
+                                            [
+                                              _c(
+                                                "a",
+                                                {
+                                                  staticClass:
+                                                    "btn btn-link btn-success btn-sm",
+                                                  staticStyle: {
+                                                    padding: "0 !important"
+                                                  },
+                                                  attrs: { title: "Edit" },
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.edit(item.id)
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass: "fa fa-edit"
+                                                  })
+                                                ]
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "a",
+                                                {
+                                                  staticClass:
+                                                    "btn btn-link btn-danger btn-sm",
+                                                  staticStyle: {
+                                                    padding: "0 !important"
+                                                  },
+                                                  attrs: { title: "Hapus" },
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.deleteData(
+                                                        item.id
+                                                      )
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass: "fa fa-times"
+                                                  })
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        ])
+                                      ]
+                                    )
+                                  }),
+                                  0
+                                )
+                              ]
+                            )
+                          ])
                         ])
                       ]),
                       _vm._v(" "),
@@ -24144,57 +24539,6 @@ var staticRenderFns = [
           _c("a", { attrs: { href: "#" } }, [_vm._v("Grid")])
         ])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th"),
-      _vm._v(" "),
-      _c("th", [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text" }
-        })
-      ]),
-      _vm._v(" "),
-      _c("th", [
-        _c("select", { staticClass: "form-control form-control-sm" }, [
-          _c("option", { attrs: { value: "" } })
-        ])
-      ]),
-      _vm._v(" "),
-      _c("th", [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text" }
-        })
-      ]),
-      _vm._v(" "),
-      _c("th", [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "date" }
-        })
-      ]),
-      _vm._v(" "),
-      _c("th", [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "text" }
-        })
-      ]),
-      _vm._v(" "),
-      _c("th", [
-        _c("input", {
-          staticClass: "form-control form-control-sm",
-          attrs: { type: "date" }
-        })
-      ]),
-      _vm._v(" "),
-      _c("th")
     ])
   }
 ]
@@ -39769,6 +40113,50 @@ var config = {
 
 /***/ }),
 
+/***/ "./resources/js/halper/filterBuilder.js":
+/*!**********************************************!*\
+  !*** ./resources/js/halper/filterBuilder.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var filterBuilder = {
+  operation: {
+    like: "like",
+    equals: "equals"
+  },
+  properties: {
+    filed: "field",
+    operation: "operation",
+    value: "value",
+    sparator: "/"
+  },
+  generateFilter: generateFilter
+};
+
+function generateFilter(fields) {
+  var props = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var uri = "";
+  var field = "";
+  fields.forEach(function (rows) {
+    field = field.concat((field !== "" ? "," : "") + rows.field + filterBuilder.properties.sparator + rows.operation + filterBuilder.properties.sparator + rows.value);
+  });
+
+  if (field !== "") {
+    uri = "?field=" + field + (props.show !== null ? "&show=" + props.show : "") + (props.page !== null ? "&page=" + props.page : "") + (props.sorting_by !== null ? "&order_by=" + props.sorting_by : "") + (props.sorting !== null ? "&order=" + props.sorting : "");
+  } else {
+    uri = "?" + (props.show !== null ? "show=" + props.show : "") + (props.page !== null ? (props.show !== null ? "&" : "") + "page=" + props.page : "") + (props.sorting_by !== null ? "&order_by=" + props.sorting_by : "") + (props.sorting !== null ? "&order=" + props.sorting : "");
+  }
+
+  return uri;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (filterBuilder);
+
+/***/ }),
+
 /***/ "./resources/js/halper/handleSevice.js":
 /*!*********************************************!*\
   !*** ./resources/js/halper/handleSevice.js ***!
@@ -39843,6 +40231,137 @@ function Get(urlRoute) {
 
 /***/ }),
 
+/***/ "./resources/js/halper/notification.js":
+/*!*********************************************!*\
+  !*** ./resources/js/halper/notification.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var notif = {
+  show: show,
+  type: {
+    DEFAULT: {
+      "class": 'default',
+      icon: 'fa fa-archive'
+    },
+    PRIMARY: {
+      "class": 'primary',
+      icon: 'fa fa-bookmark'
+    },
+    SECONDARY: {
+      "class": 'secondary',
+      icon: 'fa fa-flag'
+    },
+    INFO: {
+      "class": 'info',
+      icon: 'fa fa-info'
+    },
+    SUCCESS: {
+      "class": 'success',
+      icon: 'fa fa-check'
+    },
+    WARNING: {
+      "class": 'warning',
+      icon: 'fa fa-exclamation-circle'
+    },
+    DANGER: {
+      "class": 'danger',
+      icon: 'fa fa-times'
+    }
+  },
+  title: {
+    SUBMIT: 'SUBMIT',
+    ERROR: "ERROR",
+    UPDATE: "UPDATE",
+    DELETE: "DELETE",
+    INFO: "INFO"
+  }
+};
+
+function show(message) {
+  var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : notif.type.DEFAULT;
+  var title = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  $.notify({
+    // options
+    icon: type.icon,
+    title: title,
+    message: message // url: 'https://github.com/mouse0270/bootstrap-notify',
+    //target: '_blank'
+
+  }, {
+    // settings
+    element: 'body',
+    position: null,
+    type: type["class"],
+    allow_dismiss: true,
+    newest_on_top: false,
+    showProgressbar: false,
+    placement: {
+      from: "bottom",
+      align: "right"
+    },
+    offset: 20,
+    spacing: 10,
+    z_index: 1031,
+    delay: 5000,
+    timer: 1000,
+    // url_target: '_blank',
+    mouse_over: null,
+    animate: {
+      enter: 'animated fadeInDown',
+      exit: 'animated fadeOutUp'
+    },
+    onShow: null,
+    onShown: null,
+    onClose: null,
+    onClosed: null,
+    icon_type: 'class',
+    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' + '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' + '<span data-notify="icon"></span> ' + '<span data-notify="title">{1}</span> ' + '<span data-notify="message">{2}</span>' + '<div class="progress" data-notify="progressbar">' + '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' + '</div>' + '<a href="{3}" target="{4}" data-notify="url"></a>' + '</div>'
+  });
+}
+
+function Warning() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+}
+
+function Error() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+}
+
+function Info() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+}
+
+function Confirm(message) {
+  return new Promise(function (resolve) {
+    swal({
+      title: 'Apakah anda yakin?',
+      text: message + "!",
+      type: 'warning',
+      buttons: {
+        confirm: {
+          text: 'Lanjutkan',
+          className: 'btn btn-success'
+        },
+        cancel: {
+          visible: true,
+          text: 'Batal',
+          className: 'btn btn-danger'
+        }
+      }
+    }).then(function (response) {
+      resolve(response);
+    });
+  });
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (notif);
+
+/***/ }),
+
 /***/ "./resources/js/halper/prototype.js":
 /*!******************************************!*\
   !*** ./resources/js/halper/prototype.js ***!
@@ -39853,11 +40372,18 @@ function Get(urlRoute) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var prototype = {
-  IsNull: IsNull
+  IsNull: IsNull,
+  nameOf: nameOf
 };
 
 function IsNull(value) {
   return value == null || value == "" || value == undefined ? true : false;
+}
+
+function nameOf(obj) {
+  return Object.keys({
+    obj: obj
+  })[0];
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (prototype);

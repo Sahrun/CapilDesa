@@ -31,9 +31,9 @@ class ReligionRepository
                 'name' => $value->name,
                 'active' => $value->is_active == 1?'Active':'Non-Active',
                 'created' => '', 
-                'created_at' => date("j F Y , g:i a",strtotime($value->created_at)),
+                'created_at' => date("j M Y  g:i a",strtotime($value->created_at)),
                 'midified' => '',
-                'modified_at' => $value->updated_at? date("j F Y , g:i a",strtotime($value->updated_at)) : "" 
+                'modified_at' => $value->updated_at? date("j M Y  g:i a",strtotime($value->updated_at)) : "" 
             );
             array_push($data,$item);
         }
